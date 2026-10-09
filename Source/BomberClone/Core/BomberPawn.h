@@ -4,19 +4,26 @@
 #include "GameFramework/Pawn.h"
 #include "BomberPawn.generated.h"
 
+class USphereComponent;
+
 UCLASS()
 class BOMBERCLONE_API ABomberPawn : public APawn
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(VisibleAnywhere, Category="Components")
+	TObjectPtr<USphereComponent> SphereComponent;
+	
+	UPROPERTY(EditAnywhere, Category="Movement")
+	float MovementSpeed;
+	
 	ABomberPawn();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:
+	
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetMoveInput(FVector2D PlayerMoveInput);
+	
+private:
+	FVector2D MoveInput;
 };
