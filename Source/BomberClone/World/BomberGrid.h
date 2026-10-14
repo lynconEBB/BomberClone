@@ -34,4 +34,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	FVector CellToWorld(FIntVector2 Position);
+	FIntVector2 WorldToCell(FVector WorldPosition);
 };

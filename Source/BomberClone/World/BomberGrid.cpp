@@ -78,3 +78,9 @@ FVector ABomberGrid::CellToWorld(FIntVector2 Position)
 	
 	return center;
 }
+
+FIntVector2 ABomberGrid::WorldToCell(FVector WorldPosition)
+{
+	
+	return 	
+}
