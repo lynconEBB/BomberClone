@@ -29,19 +29,29 @@ void ABomberPawn::Tick(float DeltaTime)
 	if (MoveInput.Length() == 0)
 		return;
 	
-	FVector Dir = FVector::ZeroVector;
+	FVector MainAxis = FVector::ZeroVector;
+	FVector PerpendicularAxis = FVector::ZeroVector;
 	if (MoveInput.X != 0)
-		Dir.X = MoveInput.X;	
-	else
-		Dir.Y = MoveInput.Y;	
+	{
+		MainAxis.X = MoveInput.X;	
+		PerpendicularAxis.Y = 1.0f;	
+	} else
+	{
+		MainAxis.Y = MoveInput.Y;	
+		PerpendicularAxis.X = 1.0f;	
+	}
+	
+	FVector CellCenter = Grid->WorldToCellCenter(GetActorLocation());
+	
+	DrawDebugSphere(GetWorld(), CellCenter, 10, 12, FColor::Blue);
+	
+	FVector Diff = CellCenter - GetActorLocation();	
+	float MainOff = FVector::DotProduct(Diff, MainAxis);
+	float PerpendicularOff = FVector::DotProduct(Diff, PerpendicularAxis);
 	
 	
 	FHitResult Hit;
-	SphereComponent->MoveComponent(DeltaX, FQuat::Identity, true, &Hit);
-	if (Hit.bBlockingHit) 
-		UE_LOG(LogTemp, Warning, TEXT("Bateu"));
-	
-	SphereComponent->MoveComponent(DeltaY, FQuat::Identity, true, &Hit);
+	SphereComponent->MoveComponent(MainAxis, FQuat::Identity, true, &Hit);
 	if (Hit.bBlockingHit) 
 		UE_LOG(LogTemp, Warning, TEXT("Bateu"));
 }

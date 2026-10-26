@@ -26,6 +26,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Grid")
 	bool bShouldDrawDebug;
+	
+	int32 CellHalf;
+	FVector StartCornerLocation;
 
 public:
 	ABomberGrid();
@@ -35,4 +38,5 @@ public:
 	
 	FVector CellToWorld(FIntVector2 Position);
 	FIntVector2 WorldToCell(FVector WorldPosition);
+	FVector WorldToCellCenter(FVector WorldPosition);
 };

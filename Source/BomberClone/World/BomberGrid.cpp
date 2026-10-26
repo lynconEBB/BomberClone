@@ -7,6 +7,8 @@ ABomberGrid::ABomberGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComp");
+	StartCornerLocation = FVector::ZeroVector;
+	CellHalf = CellSize/2;
 	
 	InstancedStaticMeshComponent = CreateDefaultSubobject<UInstancedStaticMeshComponent>("CornerBlocks");
 	InstancedStaticMeshComponent->SetupAttachment(RootComponent);
@@ -16,6 +18,9 @@ void ABomberGrid::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 	InstancedStaticMeshComponent->ClearInstances();
+	
+	CellHalf = CellSize / 2;
+	StartCornerLocation = this->GetActorLocation() - FVector(Width * CellHalf,Height * CellHalf, 0);
 	
 	// Y = 0
 	for (int32 i = 0; i <= Width - 1; i++)
@@ -55,14 +60,14 @@ void ABomberGrid::Tick(float DeltaTime)
 	if (!bShouldDrawDebug)
 		return;
 	
-	FVector center = this->GetActorLocation() - FVector((Width-1) * (CellSize/2),(Height-1) * (CellSize/2), 0);
+	FVector center = this->GetActorLocation() - FVector((Width-1) * CellHalf,(Height-1) * CellHalf, 0);
 	DrawDebugSphere(GetWorld(), center, 10, 12, FColor::Green);
 	for (int32 i = 0; i < Width; i++)
 	{
 		float ogY = center.Y;
 		for (int32 j = 0; j < Height; ++j)
 		{
-			DrawDebugBox(GetWorld(), center, FVector(CellSize/2.f), FColor::Red);
+			DrawDebugBox(GetWorld(), center, FVector(CellHalf), FColor::Red);
 			center.Y += CellSize;
 		}	
 		center.Y = ogY;
@@ -72,7 +77,7 @@ void ABomberGrid::Tick(float DeltaTime)
 
 FVector ABomberGrid::CellToWorld(FIntVector2 Position)
 {
-	FVector center = this->GetActorLocation() - FVector((Width-1) * (CellSize/2),(Height-1) * (CellSize/2), 0);
+	FVector center = this->GetActorLocation() - FVector((Width-1) * CellHalf,(Height-1) * CellHalf, 0);
 	center.X += CellSize * Position.X;
 	center.Y += CellSize * Position.Y;
 	
@@ -81,6 +86,12 @@ FVector ABomberGrid::CellToWorld(FIntVector2 Position)
 
 FIntVector2 ABomberGrid::WorldToCell(FVector WorldPosition)
 {
-	
-	return 	
+	FVector Index = (WorldPosition - StartCornerLocation) / CellSize;
+	return FIntVector2(Index.X, Index.Y);
+}
+
+FVector ABomberGrid::WorldToCellCenter(FVector WorldPosition)
+{
+	FIntVector2 Index = WorldToCell(WorldPosition);
+	return CellToWorld(Index);
 }
